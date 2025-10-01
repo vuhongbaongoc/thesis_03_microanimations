@@ -1,0 +1,72 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+  }
+  body {
+    display: grid;
+    place-items: center;
+    background: #f7f7f7;
+  }
+  
+  .progress {
+    /* Center the progress absolutely so the button can also center later */
+    position: absolute;                 /* added */
+    top: 50%; left: 50%;                /* added */
+    transform: translate(-50%, -50%);   /* added */
+  
+    background: #ddd;
+    height: 150px;
+    width: 1000px;
+    border-radius: 100px;
+    overflow: hidden;
+    transition: opacity .6s ease; /* fade-out */
+  }
+
+  .progress.is-hidden {
+    opacity: 0;                      /* will fade to 0, then JS sets display:none */
+    pointer-events: none;
+  }
+  
+  .progress-done {
+    width: 0;               /* JS will animate this */
+    height: 100%;
+    border-radius: 20px 0 0 20px;
+    font: 700 220px/150px sans-serif;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    transition: width .05s linear; /* smooth step-by-step growth */
+    background: linear-gradient(to left, rgb(0, 0, 0));
+  }
+  
+  /* CTA button centered, initially hidden, then fades in */
+.cta {
+    position: absolute;                 /* center like the bar */
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 14px 24px;
+    border-radius: 999px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font: 600 18px/1.2 system-ui, sans-serif;
+    letter-spacing: .2px;
+    cursor: pointer;
+
+    text-decoration: none;   /* 🔥 removes underline */
+    display: inline-block;   /* makes link behave like a button */  
+  
+    opacity: 0;                         /* hidden initially */
+    transition: opacity .6s ease, transform .3s ease;
+    pointer-events: none;               /* not clickable while hidden */
+  }
+  .cta.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%);   /* remove any extra offset if you add one */
+  }
+  .cta:active { transform: translate(-50%, -50%) scale(0.98); }
