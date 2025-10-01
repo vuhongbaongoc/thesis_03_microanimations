@@ -1,0 +1,116 @@
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: #fff;
+  color: #000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* --- Center title --- */
+.title {
+  position: relative;
+  font-weight: 600;
+  /* large & responsive; tweak max if you want even bigger */
+  font-size: clamp(40px, 12vw, 160px);
+  line-height: 1.05;
+  letter-spacing: .01em;
+  user-select: none;
+  will-change: transform, opacity;
+  transition: transform .8s ease, opacity .6s ease;
+}
+
+/* Each letter flickers independently */
+.title span {
+  display: inline-block;
+  color: #000;
+  opacity: .2;                /* start faint */
+  animation: flicker 900ms linear infinite alternate;
+  /* random delays/durations are set in JS per-letter */
+}
+
+@keyframes flicker {
+  0%   { opacity: .15; transform: translateY(0); }
+  35%  { opacity: .5; }
+  60%  { opacity: .9; }
+  100% { opacity: .3; transform: translateY(-0.5px); }
+}
+
+/* After reveal: stop flicker & show solid black */
+.title.solid span {
+  animation: none !important;
+  opacity: 1 !important;
+  color: #000 !important;
+}
+
+/* When transitioning away, shrink & fade the big title */
+.title.exiting {
+  transform: scale(.55);
+  opacity: 0;
+}
+
+/* --- Corner labels --- */
+.corner {
+  position: fixed;
+  top: 28px;
+  font-weight: 500;
+  font-size: clamp(18px, 3vw, 48px);
+  letter-spacing: .02em;
+  color: rgba(0,0,0,.65);
+  opacity: 0;                 /* hidden at first */
+  transition: opacity .6s ease;
+  pointer-events: none;       /* purely visual; remove if they should be clickable */
+}
+
+.corner-left  { left: 28px; }
+.corner-right { right: 28px; }
+
+/* Show corners when ready */
+.show-corners .corner { opacity: 1; }
+
+/* Small screens: add a little breathing room */
+@media (max-width: 520px) {
+  .corner { top: 16px; font-size: clamp(16px, 5vw, 28px); }
+  .corner-left { left: 16px; }
+  .corner-right { right: 16px; }
+}
+
+/* --- Top navigation --- */
+.nav {
+    position: fixed;
+    top: 92px;                 /* sits below the big corner titles */
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 28px;
+    font-size: 14px;
+    letter-spacing: .01em;
+    color: rgba(0,0,0,.6);
+  
+    opacity: 0;                /* hidden until the corners show */
+    transition: opacity .6s ease;
+    pointer-events: none;      /* avoid intercepting clicks while hidden */
+    z-index: 2;
+  }
+  
+  .nav-link {
+    color: rgba(0,0,0,.6);
+    text-decoration: none;     /* remove underline */
+  }
+  .nav-link:hover { color: #000; }
+  
+  /* Reveal nav at the same time as corners */
+  .show-corners .nav {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Responsive tweak: move nav a bit closer on small screens */
+  @media (max-width: 520px) {
+    .nav { top: 72px; padding: 0 16px; font-size: 13px; }
+  }
+  
