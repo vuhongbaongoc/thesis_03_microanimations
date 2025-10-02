@@ -40,9 +40,8 @@ window.addEventListener('DOMContentLoaded', () => {
     }, FLICKER_MS);
   });
 
-  /* ===== Build the auto-scrolling carousel =====
-   Put your ~60 clips in: /page-1/videos/ named 1.mp4 ... 60.mp4
-   (or edit the array if you have different filenames/paths) */
+  /* ===== Build auto-scrolling carousel =====
+   Put ~60 clips in: page-1 folder named 1.mp4 ... 60.mp4 */
 (function () {
   const track = document.getElementById('carouselTrack');
   if (!track) return;
@@ -74,7 +73,6 @@ window.addEventListener('DOMContentLoaded', () => {
   addSet(sources);
   addSet(sources);
 
-  // NOTE: We do NOT pause videos on hover — only the track animation pauses via CSS.
 })();
 
 
@@ -106,3 +104,26 @@ function initCarousel() {
   addSet(sources);
   addSet(sources);
 }
+
+(function () {
+  const stage = document.querySelector('.stage') || document.body; // if you wrapped with .stage
+  const track = document.getElementById('carouselTrack');
+  if (!track) return;
+
+  const supportsHas = CSS.supports?.('selector(:has(*))');
+  if (supportsHas) return;
+
+  track.addEventListener('mouseover', (e) => {
+    const card = e.target.closest('.card');
+    if (!card) return;
+    stage.classList.add('hovering');
+    card.classList.add('hover-target');
+  });
+
+  track.addEventListener('mouseout', (e) => {
+    const toCard = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.card');
+    if (toCard) return; // still inside a card
+    stage.classList.remove('hovering');
+    track.querySelectorAll('.hover-target').forEach(el => el.classList.remove('hover-target'));
+  });
+})();

@@ -1,57 +1,12 @@
 * { box-sizing: border-box; margin: 0; }
 html, body { height: 100%; }
 body {
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
   background: #fff;
   color: #000;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
 }
 
-/* --- Center title --- */
-.title {
-  position: relative;
-  font-weight: 600;
-  /* large & responsive; tweak max if you want even bigger */
-  font-size: clamp(40px, 12vw, 160px);
-  line-height: 1.05;
-  letter-spacing: .01em;
-  user-select: none;
-  will-change: transform, opacity;
-  transition: transform .8s ease, opacity .6s ease;
-}
-
-/* Each letter flickers independently */
-.title span {
-  display: inline-block;
-  color: #000;
-  opacity: .2;                /* start faint */
-  animation: flicker 900ms linear infinite alternate;
-  /* random delays/durations are set in JS per-letter */
-}
-
-@keyframes flicker {
-  0%   { opacity: .15; transform: translateY(0); }
-  35%  { opacity: .5; }
-  60%  { opacity: .9; }
-  100% { opacity: .3; transform: translateY(-0.5px); }
-}
-
-/* After reveal: stop flicker & show solid black */
-.title.solid span {
-  animation: none !important;
-  opacity: 1 !important;
-  color: #000 !important;
-}
-
-/* When transitioning away, shrink & fade the big title */
-.title.exiting {
-  transform: scale(.55);
-  opacity: 0;
-}
-
-/* --- Corner labels --- */
+/* Corner titles */
 .corner {
   position: fixed;
   top: 28px;
@@ -59,58 +14,158 @@ body {
   font-size: clamp(18px, 3vw, 48px);
   letter-spacing: .02em;
   color: rgba(0,0,0,.65);
-  opacity: 0;                 /* hidden at first */
-  transition: opacity .6s ease;
-  pointer-events: none;       /* purely visual; remove if they should be clickable */
+  opacity: 1;
+  pointer-events: none;
+  z-index: 5;
 }
-
 .corner-left  { left: 28px; }
 .corner-right { right: 28px; }
 
-/* Show corners when ready */
-.show-corners .corner { opacity: 1; }
+/* Top nav */
+.nav {
+  position: fixed;
+  top: 100px;
+  left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 28px;
+  font-size: 14px;
+  color: rgba(0,0,0,.6);
+  z-index: 5;
+}
+.nav-link { color: rgba(0,0,0,.6); text-decoration: none; }
+.nav-link:hover { color: #000; }
 
-/* Small screens: add a little breathing room */
-@media (max-width: 520px) {
-  .corner { top: 16px; font-size: clamp(16px, 5vw, 28px); }
-  .corner-left { left: 16px; }
-  .corner-right { right: 16px; }
+/* Page layout: sidebar + grid */
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;          /* sidebar width + grid */
+  gap: 24px;
+  padding: 140px 28px 40px;                  /* leave space under titles/nav */
 }
 
-/* --- Top navigation --- */
-.nav {
-    position: fixed;
-    top: 92px;                 /* sits below the big corner titles */
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 28px;
-    font-size: 14px;
-    letter-spacing: .01em;
-    color: rgba(0,0,0,.6);
+/* Sidebar */
+.filters {
+  position: sticky; top: 140px;
+  display: flex; flex-direction: column; gap: 16px;
+  align-self: start;
+}
+.filter {
+  appearance: none; border: 0; background: none;
+  text-align: left; padding: 6px 0; cursor: pointer;
+  color: rgba(0,0,0,.6);
+  font: 500 14px/1.2 inherit;
+}
+.filter:hover, .filter.active { color: #000; }
+
+/* Grid of square tiles */
+:root { --tile: clamp(110px, 10.5vw, 160px); --gap: 18px; --mat: 8px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile), 1fr));
+  gap: var(--gap);
+  align-content: start;
+}
+
+/* Tile (square) */
+.tile {
+  aspect-ratio: 1 / 1;               /* perfect square */
+  border-radius: 10px;
+  background: #fff;                   /* white mat */
+  border: 1px solid #eee;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Inner frame keeps full image w/ padding (mat) */
+.media-wrap {
+  position: absolute; inset: 0;
+  padding: var(--mat);
+  display: grid; place-items: center;
+  background: #fff;
+}
+
+/* Spinner cover (shows until tile.ready) */
+.spinner {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: #000000;
+  transition: opacity .4s ease, visibility .4s ease;
+}
+
+/* Spinning dots */
+.spinner::before {
+  content: "";
+  width: 30px;                 /* dot size */
+  height: 30px;
+  border-radius: 50%;
+  color: #444;                /* dot color (uses currentColor) */
   
-    opacity: 0;                /* hidden until the corners show */
-    transition: opacity .6s ease;
-    pointer-events: none;      /* avoid intercepting clicks while hidden */
-    z-index: 2;
-  }
-  
-  .nav-link {
-    color: rgba(0,0,0,.6);
-    text-decoration: none;     /* remove underline */
-  }
-  .nav-link:hover { color: #000; }
-  
-  /* Reveal nav at the same time as corners */
-  .show-corners .nav {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  
-  /* Responsive tweak: move nav a bit closer on small screens */
-  @media (max-width: 520px) {
-    .nav { top: 72px; padding: 0 16px; font-size: 13px; }
-  }
-  
+  /* 8 dots arranged in a circle using box-shadow */
+   /* ---- tweak this to change the circle size ---- */
+   --ring: 50px;               /* circle radius */
+   --diag: calc(var(--ring) * 0.7071); /* ring / √2 for diagonal dots */
+ 
+   box-shadow:
+     0            calc(-1*var(--ring)) 0 0 currentColor,
+     var(--diag)  calc(-1*var(--diag)) 0 0 rgba(68,68,68,.85),
+     var(--ring)  0                     0 0 rgba(68,68,68,.70),
+     var(--diag)  var(--diag)           0 0 rgba(68,68,68,.55),
+     0            var(--ring)           0 0 rgba(68,68,68,.40),
+     calc(-1*var(--diag)) var(--diag)   0 0 rgba(68,68,68,.25),
+     calc(-1*var(--ring)) 0            0 0 rgba(68,68,68,.20),
+     calc(-1*var(--diag)) calc(-1*var(--diag)) 0 0 rgba(68,68,68,.10);
+   animation: spin 900ms linear infinite;
+ }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+/* Video/image element: full frame shown (no crop) */
+.tile video, .tile img {
+  width: 100%; height: 100%;
+  object-fit: contain;                /* show full image */
+  object-position: center;
+  filter: grayscale(1);               /* start B/W */
+  transition: filter .2s ease, transform .2s ease, opacity .3s ease;
+  opacity: 0;                         /* hidden until ready */
+}
+
+/* Reveal clip after delay */
+.tile.ready .spinner { opacity: 0; visibility: hidden; }
+.tile.ready video, .tile.ready img { opacity: 1; }
+
+/* Hover = color reveal */
+.tile.ready:hover video, .tile.ready:hover img { filter: none; }
+
+/* Optional: subtle scale on hover */
+.tile.ready:hover video, .tile.ready:hover img { transform: scale(1.02); }
+
+/* Tiles that are intentionally blank loading squares forever */
+.tile.loading-only .spinner { opacity: 1; visibility: visible; }
+.tile.loading-only .media-wrap { display: none; }
+
+/* Filtering (category buttons) */
+.grid .tile { display: block; }
+.grid[data-filter="A"] .tile:not([data-cat="A"]),
+.grid[data-filter="B"] .tile:not([data-cat="B"]),
+.grid[data-filter="C"] .tile:not([data-cat="C"]),
+.grid[data-filter="D"] .tile:not([data-cat="D"]) { display: none; }
+
+/* Small screens */
+@media (max-width: 640px) {
+  .layout { grid-template-columns: 1fr; }
+  .filters { position: static; flex-direction: row; flex-wrap: wrap; gap: 12px; }
+}
+
+/* one knob to move the grid + left nav down */
+:root { --header-offset: 240px; }  
+
+/* use the knob */
+.layout { padding: var(--header-offset) 28px 40px; }
+.filters { top: var(--header-offset); }
+
+/* (optional) a little extra gap above the grid content itself */
+.grid { margin-top: 8px; }
+
+@media (max-width: 640px) {
+  :root { --header-offset: 120px; } /* smaller offset on mobile, if desired */
+}
