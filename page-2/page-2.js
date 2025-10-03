@@ -4,9 +4,17 @@ const BLANK_INDEXES = [6, 14, 29, 41, 55];       // tiles that stay as perpetual
 
 // Map each index (1-based) to a category A/B/C/D
 const CAT_OF = {
-    1: "A", 2: "B", 3: "C", 4: "D",
-    5: "A", 6: "A", 7: "C", 8: "B",
-    // ...keep going for all your clips
+  // A = Animations
+    1: "A", 2: "A", 3: "A", 4: "A", 5: "A", 6: "A", 7: "A", 8: "A", 11: "A", 12:"A", 14: "A", 15: "A", 16: "A",17: "A",18: "A",19: "A", 20: "A", 21: "A", 22: "A", 25: "A", 26: "A", 27: "A", 28: "A", 29: "A", 30: "A", 31: "A", 32: "A",
+    
+  // B = loaders
+    9: "B", 10: "B", 13: "B", 33: "B", 34: "B", 35: "B", 37: "B", 38: "B", 39: "B", 40: "B", 41: "B", 42: "B", 43: "B", 44: "B", 45: "B", 46: "B", 47: "B", 48: "B", 49: "B", 50: "B", 51: "B",
+
+  // C = Verification & Gating 
+    23: "C", 24: "C", 
+
+  // D = skeleton & placeholders
+    36: "D", 52: "D", 53: "D", 54: "D", 55: "D", 56: "D", 57: "D", 58: "D", 59: "D",  
   };
   
 const SRC_FOR = (i) => `../page-1/videos/${i}.mp4`; // adjust to your path if different
